@@ -1,0 +1,54 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block content %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Copias de Seguridad Felican Villalba</h1>
+    </div>
+
+    <!-- Content Row -->
+    <div class="d-flex justify-content-center align-items-center">
+            <div id="avisos" class="card border-bottom-info  shadow py-2 mt-5">
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col-12 text-center">
+                            <div class="text-xl-center font-weight-bold text-primary text-uppercase mb-1">Copia de Base
+                                de Datos Felican
+                            </div>
+                            {% if not (authUrl is empty) %}
+                                <p>Pincha para iniciar sesión en google y poder empezar con la copia de seguridad</p>
+                                <a href='{{ authUrl }}' class="btn btn-lg btn-success text-lg-center mt-3">CONECTAR CON
+                                    GOOGLE</a>
+                                <div>
+                                    <a href='/home'
+                                       class="btn btn-sm btn-danger float-left text-sm-center mt-3">CANCELAR</a>
+                                </div>
+
+                            {% elseif (authURL is empty) and (success is empty) %}
+                                <form method="POST" action="/backup">
+                                    <p>Ya estamos conectados! Ahora pincha en el botón para iniciar la copia.</p>
+                                    <button type="submit" class="btn btn-lg btn-danger text-lg-center mt-3">INICIAR
+                                        COPIA
+                                    </button>
+                                </form>
+
+                            {% elseif (authURL is empty) and (success == 1) %}
+                                <i class="fas fa-check-circle fa-4x text-success mt-2"></i>
+                                <p class="text-black-50 mt-2">Copia creada con éxito! Pincha en el botón para acceder al
+                                    programa:</p>
+                                <a href='/home' class="btn btn-lg btn-primary text-lg-center mt-3">IR A PROGRAMA</a>
+
+                            {% elseif (authURL is empty) and (success == 0) %}
+                                <i class="fas fa-exclamation-circle fa-4x text-danger mt-2"></i>
+                                <p class="text-black-50 mt-2">Oops! Ha habido un fallo. Inténtalo de nuevo.</p>
+                                <a href='/backup' class="btn btn-lg btn-warning text-lg-center mt-3">REINTENTAR
+                                    COPIA </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+{% endblock %}

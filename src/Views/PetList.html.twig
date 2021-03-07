@@ -1,0 +1,88 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block head %}
+    <link href="{{files_rootpath}}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-1">
+        <h1 class="h3 mb-0 rojo-felican">Lista de Mascotas</h1>
+    </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <p class="mb-4">Listado de mascotas. Selecciona una entrada y se cargará la ficha del cliente asociada a la mascota. (Cada columna se puede organizar para mostrar los resultados alfabéticamente).</p>
+                <!-- Nuevo Cliente-->
+                <div class="card shadow mb-4">
+
+                    <div class="card-header py-3">
+                        <div class="row">
+                            <div class="col-12 pt-1">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    Registro de Mascotas
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Nombre Mascota</th>
+                                    <th>Propietario</th>
+                                    <th>Iguala</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Nº Chip</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <th>Nombre Mascota</th>
+                                    <th>Propietario</th>
+                                    <th>Iguala</th>
+                                    <th>Especie</th>
+                                    <th>Raza</th>
+                                    <th>Nº Chip</th>
+                                </tr>
+                                </tfoot>
+                                <tbody>
+                                {% for mascota in listado_mascotas %}
+                                    <tr>
+                                        <td><a href="client/{{ mascota.propietario[0] }}">
+                                                {{ mascota.nombre }}
+                                            </a>
+                                        </td>
+                                        <td> {{ mascota.propietario[1] }}</td>
+                                        <td> {{ mascota.igualada|lower == 'si' ? 'IGUALADA' : '-' }}</td>
+                                        <td> {{ mascota.especie }}</td>
+                                        <td> {{ mascota.raza }}</td>
+                                        <td> {{ mascota.nchip }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+
+    <!-- Page level plugins -->
+    <script src="{{files_rootpath}}/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{files_rootpath}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="{{files_rootpath}}/vendor/datatables/accent-neutralise.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script src="{{files_rootpath}}/js/dataTables-custom-alex.js"></script>
+{% endblock %}

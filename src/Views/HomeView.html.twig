@@ -1,0 +1,95 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block content %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Inicio</h1>
+    </div>
+    <!-- Content Row -->
+    <div class="row">
+
+        <!-- Nuevo Cliente -->
+        <div class="col-md-6 mb-4">
+            <a class="acciones" href="/client/new">
+                <div class="card border-left-primary shadow h-100 py-2 hvr-grow">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col  text-center">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Nuevo Cliente</div>
+                                <i class="fas fa-plus fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Listado de Clientes -->
+        <div class="col-md-6 mb-4">
+            <a class="acciones" href="/clients">
+                <div class="card border-left-success shadow h-100 py-2 hvr-grow">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col text-center">
+                                <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Listado de Clientes</div>
+                                <i class="fas fa-users fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Listado de Mascotas -->
+        <div class="col-md-6 mb-4">
+            <a class="acciones" href="/pets">
+                <div class="card border-left-info shadow h-100 py-2 hvr-grow">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col  text-center">
+                                <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Listado de Mascotas</div>
+                                <i class="fas fa-paw fa-2x text-gray-300"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Avisos -->
+        <div class="col-md-6 mb-4">
+            <a class="acciones" target="_blank" href="/avisos">
+                <div class="card border-left-warning shadow h-100 py-2 hvr-grow">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col text-center">
+                                <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Avisos</div>
+                                <i class="fas fa-bell fa-2x text-gray-300"></i>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- Mails -->
+        <div class="col-md-6 mb-4">
+            <a class="acciones" href="/mail">
+                <div class="card border-left-danger shadow h-100 py-2 hvr-grow">
+                    <div class="card-body">
+                        <div class="row no-gutters align-items-center">
+                            <div class="col text-center">
+                                <div class="text-xs font-weight-bold text-danger text-uppercase mb-1">Enviar Correo</div>
+                                <i class="fas fa-envelope fa-2x text-gray-300"></i>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+    </div>
+{% endblock %}

@@ -1,0 +1,130 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block head %}
+    <link href="{{ files_rootpath }}/css/core.css" rel="stylesheet" type="text/css" />
+    <link href="{{ files_rootpath }}/css/datepicker.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 text-gray-800">Avisos</h1>
+    </div>
+    <!-- Content Row -->
+    <div class="row">
+
+        <div class="col-8 col-lg-6 col-xl-4  offset-2 offset-lg-3 offset-xl-4 mb-4">
+            <div id="avisos" class="card border-bottom-info  shadow py-2">
+                <div class="card-body">
+                    <form id="avisosform" action="/avisos" method="POST">
+                        <div class="row no-gutters align-items-center mb-2">
+                            <div class="col text-center avisos-card-title">
+                                <div class="text-lg font-weight-bold text-info text-uppercase mb-2">Rango de Fechas</div>
+                                <p class="text-center text-danger mt-1 d-none">La fecha de inicio no puede ser más tarde que la fecha de fin.</p>
+                            </div>
+                        </div>
+                        <div class="row text-center">
+                            <div class="col-3 pt-2 text-primary font-weight-bold text-uppercase">
+                                Del:
+                            </div>
+                            <div class="col-8">
+                                <input name="datepicker_one" id="datepicker_one">
+                                <span class="form-verification-1 text-danger text-sm-left d-none">Rellena este campo correctamente.</span>
+                            </div>
+                        </div>
+                        <div class="row text-center mt-3 mb-5">
+                            <div class="col-3 pt-2 text-primary font-weight-bold text-uppercase">
+                                Al:
+                            </div>
+                            <div class="col-8">
+                                <input name="datepicker_two" id="datepicker_two">
+                                <span class="form-verification-2 text-danger text-sm-left d-none">Rellena este campo correctamente.</span>
+                            </div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <div id="buttoncontainer">
+                                <button type="button" class="d-sm-inline-block btn btn-sm btn-primary shadow-sm" onClick="customSubmit()"><i class="fas fa-download fa-sm text-white-50"></i> Generar Informe</button>
+                            </div>
+                            <div id="loader" class="spinner-border text-danger" role="status">
+                            </div>
+                        </div>
+                    </form>
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+
+
+
+        $(document).ready(function() {
+            $("#loader").hide();
+        });
+
+        function customSubmit() {
+
+            $dp1span = $('span.form-verification-1');
+            $dp2span = $('span.form-verification-2');
+            $p = $('.avisos-card-title > p');
+
+            $dp1span.addClass('d-none');
+            $dp2span.addClass('d-none');
+            $p.addClass('d-none');
+
+            $datepicker_one = $('#datepicker_one');
+            $datepicker_two = $('#datepicker_two');
+            let fi =  $datepicker_one.val().split("/").reverse(); //array -> año, mes, dia
+            let ff = $datepicker_two.val().split("/").reverse();
+            let fecha_inicial_string = Date.parse(fi.join("/"));
+            let fecha_final_string = Date.parse(ff.join("/"));
+            let fecha_inicial = new Date(fi[0],(+fi[1]-1),fi[2]);
+            let fecha_final = new Date(ff[0],(+ff[1]-1),ff[2]);
+            const isFechaInicialValid = (Boolean(+fecha_inicial) && fecha_inicial.getDate() == fi[2]);
+            const isFechaFinalValid = (Boolean(+fecha_final) && fecha_final.getDate() == ff[2]);
+
+            if((isFechaInicialValid && isFechaFinalValid) && fecha_inicial_string <= fecha_final_string){
+                //ambas fechas son correctas
+                $("#buttoncontainer").hide();
+                $("#loader").show();
+                $('#avisosform').submit();
+            }
+            if(!isFechaInicialValid){
+                $dp1span.removeClass('d-none');
+            }
+            if(!isFechaFinalValid){
+                $dp2span.removeClass('d-none');
+            }
+            if(fecha_inicial_string > fecha_final_string){
+                $p.removeClass('d-none');
+            }
+
+        }
+
+    </script>
+
+    <script src="{{ files_rootpath }}/js/core.js"></script>
+    <script src="{{ files_rootpath }}/js/datepicker.js"></script>
+
+    <script>
+        new GijgoDatePicker(document.getElementById('datepicker_one'), {
+            uiLibrary: 'bootstrap4',
+            locale: 'es-es',
+            format: 'dd/mm/yyyy'
+        });
+        new GijgoDatePicker(document.getElementById('datepicker_two'), {
+            uiLibrary: 'bootstrap4',
+            locale: 'es-es',
+            format: 'dd/mm/yyyy'
+        });
+    </script>
+
+
+{% endblock %}

@@ -1,0 +1,548 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block content %}
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-2 mr-1">
+
+        <h1 class="h3 mb-0 rojo-felican">Ficha de Cliente</h1>
+
+        <div class="prevnext">
+            {% if previousId != -1 %}
+                <a href="/client/{{ previousId }}"><i class="fas fa-arrow-alt-circle-left"></i><span class="ml-2">Anterior</span></a>
+            {% endif %}
+            {% if nextId != -1 %}
+                <a href="/client/{{ nextId }}" class="ml-3"><span class="mr-2">Siguiente</span><i class="fas fa-arrow-alt-circle-right"></i></a>
+            {% endif %}
+        </div>
+
+        <a href="#" class="btn btn-danger btn-icon-split" data-backdrop="static" data-toggle="modal"
+           data-target="#ModalBajaCliente">
+            <span class="icon text-white-50"><i class="fas fa-trash"></i></span>
+            <span class="text">Baja Cliente</span>
+        </a>
+
+    </div>
+
+    <div class="d-flex align-items-center justify-content-center mb-2">
+        {% if flash.check_type == 'check_ok' %}
+            <div id="flash_success" class="alert alert-success text-center">
+                {%  for message in flash.message %}
+                <strong>{{ message }}</strong>
+                {% endfor %}
+            </div>
+        {% elseif flash.check_type == 'check_error' %}
+            <div id="flash_error" class="alert alert-danger text-center">
+                {%  for message in flash.message %}
+                    <strong>{{ message }}</strong>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-6">
+
+            <!-- Descripción Cliente -->
+            <div class="card shadow mb-4">
+
+                <div class="card-header py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {{ cliente.apellidos ~ ", " ~ cliente.nombre }}
+                        </h6>
+                        <a class="hvr-grow" href="/client/edit/{{ cliente.pkey }}">
+                            <i class="fas fa-edit fa-2x text-primary"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <th scope="row">Nombre </th>
+                            <td>  {{ cliente.apellidos ~ ", " ~ cliente.nombre }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Dirección</th>
+                            <td>{{ cliente.direccion }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">C.P</th>
+                            <td>  {{ cliente.cp }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Población</th>
+                            <td>  {{ cliente.poblacion }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Provincia</th>
+                            <td>  {{ cliente.provincia }}</td>
+                        <tr>
+                            <th scope="row"> Teléfonos</th>
+                            <td>
+                                <ul class="pl-3">
+                                    {% for tel in cliente.tels %}
+                                        <li>{{ tel }}</li>
+                                    {% endfor %}
+                                </ul>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Email</th>
+                            <td>  {{ cliente.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">DNI</th>
+                            <td>  {{ cliente.dni }}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-lg-6">
+            <!-- Caja Mascotas del Cliente -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {{ "Mascotas de " ~ cliente.apellidos ~ ", " ~ cliente.nombre }}
+                        </h6>
+                        <a class="hvr-grow" href="/pet/new/{{ cliente.pkey }}">
+                            <i class="fas fa-plus fa-2x text-primary"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body">
+
+                    <div class="row">
+
+                        {% for mascota in cliente.mascotas %}
+                            <div class="col-6 mb-4 h-100">
+                                <a class="nounderline"
+                                   href="/pet/{{ mascota.pkey }}">
+                                    <div class="card mascotas-card hvr-grow">
+                                        <div class="card-body text-center">
+                                            <img class='ot-circle' src='{{files_rootpath}}/icons/{{ (mascota.especie|lower ~ ".svg")|replace({'ó':'o'}) }}'/>
+                                            <div class="row">
+                                                <div class="col-12">
+                                                    <h6 {{ (mascota.nombre| length >= 15) ? 'style="font-size:12px;"'}}
+                                                            class="m-0 font-weight-bold rojo-felican">
+                                                        {{ mascota.nombre }}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-8 offset-2">
+                                                    <h6 style="font-size:12px;" class="mt-1 text-center font-weight-bold text-light bg-dark rounded">
+                                                        {{ (mascota.igualada == 'si') ? 'IGUALADA'}}
+                                                    </h6>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- Deudas -->
+
+    <!-- valor deuda e historial deudas -->
+    <div class="row">
+        <div class="col-1">
+            <p id="debt-text"class=" pl-2 font-weight-bold pt-2">Deuda :</p>
+
+        </div>
+        <div class="col-2">
+            <div id="debt-div"class="input-group mb-3">
+                <input type="text" id="debt" class="form-control font-weight-bold" value="{{ cliente.deuda }}" disabled="disabled">
+                <div class="input-group-append">
+                    <span id="debt-euroicon"class="input-group-text text-white" id="basic-addon2">€</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+                        <span class="btn btn-warning btn-circle" data-backdrop="static" data-toggle="modal"
+                              data-target="#ModalDeudaCliente">
+                            <i class="fas fa-coins"></i>
+                        </span>
+        </div>
+    </div>
+    <!-- suma deuda -->
+    <div class="row">
+        <div class="col-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control sumdebt font-weight-bold" placeholder="Importe a sumar a la deuda" onkeypress="return isNumberKey(event)">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">€</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+                        <span class="btn btn-danger btn-circle" onClick="changeDebt('sum')">
+                            <i class="fas fa-plus"></i>
+                        </span>
+        </div>
+    </div>
+    <!-- resta deuda -->
+    <div class="row">
+        <div class="col-3">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control subdebt font-weight-bold" placeholder="Importe a restar a la deuda" onkeypress="return isNumberKey(event)">
+                <div class="input-group-append">
+                    <span class="input-group-text" id="basic-addon2">€</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-2">
+                        <span class="btn btn-success btn-circle" onClick="changeDebt('sub')">
+                            <i class="fas fa-minus"></i>
+                        </span>
+        </div>
+    </div>
+
+    <!-- End Deudas -->
+
+{% endblock %}
+
+
+{% block modals %}
+    <!-- Modals -->
+
+    <!-- Modal Borrar Cliente -->
+    <div class="modal fade" id="ModalBajaCliente" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">CONFIRMAR BAJA CLIENTE</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que quieres dar de baja a este cliente? Se borrarán todos los datos de este
+                    cliente,
+                    incluyendo sus mascotas registradas.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <form action="/client/delete/{{ cliente.pkey }}" method="POST">
+                        <button name="bajacliente" type="submit" class="btn btn-danger">Dar de baja</button>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Deudas -->
+    <div class="modal fade" id="ModalDeudaCliente" tabindex="-1" role="dialog" aria-labelledby="ModalDeudaClientes"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ModalDeudaheader">Situación Económica del Cliente</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="success_deuda" class="alert alert-success text-center">
+                        <strong>Cambios guardados correctamente.</strong>
+                    </div>
+                    <div id="error_deuda" class="alert alert-danger text-center">
+                        <strong>Ha habido un error al guardar los cambios.</strong>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="tabladeuda" width="100%" cellspacing="0">
+                            <thead class="bg-warning text-white font-weight-bold">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Concepto</th>
+                            </tr>
+                            </thead>
+                            <tfoot class="bg-warning text-white font-weight-bold">
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Concepto</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            {% for deuda in cliente.historialdeuda %}
+                                <tr>
+                                    <td><input type='text' value='{{ deuda.fecha }}' disabled></td>
+                                    <td><textarea name='concepto'> {{ deuda.concepto }}</textarea></td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-3 mb-3 text-center">
+                            <span class="btn btn-dark btn-icon-split" onClick="addRow()">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-list"></i>
+                                </span>
+                                <span class="text">Nueva Entrada</span>
+                            </span>
+                        <span class="btn btn-danger btn-icon-split" onClick="deleterow()">
+                                <span class="icon text-white-50">
+                                    <i class="fas fa-trash"></i>
+                                </span>
+                                <span class="text">Borrar Última Entrada</span>
+                            </span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="scrollanchor"></span>
+                    <button id ="submit_deuda" name ="submit_deuda"  class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- End of Modals -->
+{% endblock %}
+
+{% block scripts %}
+    <!-- script flash notifications -->
+    <script>
+
+        $(document).ready(function () {
+
+            $('#flash_success').show().delay(2000).fadeOut(1000);
+            $('#flash_error').show().delay(2000).fadeOut(1000);
+
+        });
+
+
+        <!-- Script deudas -->
+
+
+        function isNumberKey(evt) {
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode != 46 && charCode > 31
+                && (charCode < 48 || charCode > 57))
+                return false;
+
+            return true;
+        }
+
+        function owe() {
+            $('#debt-text').removeClass('verde-ok');
+            $('#debt-div').removeClass('blink_me');
+            $('#debt').removeClass('border-success verde-ok');
+            $('#debt-euroicon').removeClass('bg-success border-success');
+
+            $('#debt-text').addClass('rojo-felican blink_me');
+            $('#debt-div').addClass('blink_me');
+            $('#debt').addClass('border-danger rojo-felican');
+            $('#debt-euroicon').addClass('bg-danger border-danger');
+        }
+
+        function nodebt() {
+
+            $('#debt-text').removeClass('rojo-felican blink_me');
+            $('#debt-div').removeClass('blink_me');
+            $('#debt').removeClass('border-danger rojo-felican');
+            $('#debt-euroicon').removeClass('bg-danger border-danger');
+
+            $('#debt-text').addClass('verde-ok');
+            $('#debt').addClass('border-success verde-ok');
+            $('#debt-euroicon').addClass('bg-success border-success');
+
+        }
+
+
+        function changeDebtColour() {
+            const debt = parseFloat($('#debt').val().replace(',', '.'));
+            if (debt > 0.00) {
+                owe();
+            }
+            else {
+                nodebt();
+
+            }
+
+        }
+
+
+        function changeDebt(type) {
+            const t = type;
+            var newval;
+            switch (t) {
+                case "sum":
+                    if ($('.sumdebt').val() !== '') {
+                        newval = String(parseFloat(parseFloat($('#debt').val().replace(',', '.')) + parseFloat($('.sumdebt').val().replace(',', '.'))).toFixed(2));
+                        $('#debt').val(newval);
+                        $('.sumdebt').val('');
+
+                        break;
+                    } else {
+                        break;
+                    }
+
+                    break;
+                case "sub":
+                    if ($('.subdebt').val() !== '') {
+                        newval = String(parseFloat(parseFloat($('#debt').val().replace(',', '.')) - parseFloat($('.subdebt').val().replace(',', '.'))).toFixed(2));
+                        $('#debt').val(newval);
+                        $('.subdebt').val('');
+                        break;
+                    } else {
+                        break;
+                    }
+                default:
+                    break;
+            }
+
+            $.ajax({
+                data: {'deuda': newval}, //datos que se envian a traves de ajax
+                url:   '/client/{{ cliente.pkey }}/debt', //archivo que recibe la peticion
+                type: "POST", //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success: function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+                    console.log(response);
+                }
+            });
+            changeDebtColour();
+        }
+
+
+        $('#ModalDeudaCliente').on('shown.bs.modal', function () {
+            $target = $('#scrollanchor');
+            $('#ModalDeudaCliente').animate({
+                scrollTop: $target.offset().top + 'px'
+            }, 1000);
+        });
+
+
+        $(document).ready(function () {
+            changeDebtColour();
+            $('#success_deuda').hide();
+            $('#error_deuda').hide();
+
+
+        });
+
+
+        function rowCount() {
+            return $('#tabladeuda tbody tr').length;
+        }
+
+        function addRow() {
+            var prevrow = rowCount();
+            var currentrow = rowCount() + 1;
+
+            if ($('#tabladeuda tbody tr td:nth-child(1) span').length > 0) {
+                alert("No puedes añadir más entradas hasta que no completes la última entrada generada.")
+            } else {
+
+                if (prevrow <= 0) {
+                    $('#tabladeuda tbody').append(
+                        "<tr>" +
+                        "<td><input type='text' value='' placeholder='dd/mm/aaaa' disabled><span class='btn btn-primary btn-circle btn-sm' onClick='setCurrentDate(" + currentrow + ")'>" + "<i class='fas fa-calendar'></i></span></td>" +
+                        "<td><textarea placeholder='.......' name='concepto'></textarea></td>" +
+                        "</tr>"
+                    )
+                    ;
+                }
+                else {
+                    $("#tabladeuda tbody tr:nth-child(" + prevrow + ") td:nth-child(1) span").remove();
+                    $('#tabladeuda tbody').append(
+                        "<tr>" +
+                        "<td><input type='text' placeholder='dd/mm/aaaa' value='' disabled><span class='btn btn-primary btn-circle btn-sm' onClick='setCurrentDate(" + currentrow + ")'>" + "<i class='fas fa-calendar'></i></span></td>" +
+                        "<td><textarea placeholder='.......' name='concepto'></textarea></td>" +
+                        "</tr>"
+                    )
+                    ;
+
+
+                }
+            }
+
+        }
+
+        function deleterow() {
+            $('#tabladeuda tbody tr:last').remove();
+        }
+
+        function setCurrentDate(nrow) {
+            var date = new Date();
+            var day = ("0" + date.getDate()).slice(-2);
+            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+            var year = date.getFullYear();
+            const idate = [day, month, year].join('-');
+
+            $('#tabladeuda tbody tr td:nth-child(1) span').remove();
+
+            $("#tabladeuda tbody tr:nth-child(" + rowCount() + ") td:nth-child(1) input").val(idate);
+
+        }
+
+
+        function getDeudaArray() {
+            let fechas = [];
+            let conceptos = [];
+            let historial_deuda = [];
+            $('#tabladeuda > tbody  > tr > td > input').each(function () {
+                fechas.push($(this).val().trim());
+            });
+            $('#tabladeuda > tbody  > tr > td > textarea').each(function () {
+
+                conceptos.push($(this).val().trim());
+            });
+
+            for (var i = 0; i < fechas.length; i++) {
+                historial_deuda.push([fechas[i], conceptos[i]]);
+            }
+            return historial_deuda;
+
+        }
+
+        $('#submit_deuda').click(function () {
+
+            var params = {"historialdeuda": getDeudaArray()};
+
+            $.ajax({
+                data: params, //datos que se envian a traves de ajax
+                url: '/client/{{ cliente.pkey }}/debtHistory', //archivo que recibe la peticion
+                type: 'post', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success: function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+
+                    if (parseInt(response) === 1) {
+                        $('#error_deuda').show().delay(2000).fadeOut(1000);
+
+                    }
+
+                    if (parseInt(response) === 0) {
+                        $('#success_deuda').show().delay(2000).fadeOut(1000);
+
+                    }
+                }
+            });
+
+        });
+
+    </script>
+{% endblock %}

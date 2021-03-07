@@ -1,0 +1,358 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 rojo-felican">{{ cliente is empty ? 'Nuevo Cliente' : 'Editar Cliente' }}</h1>
+    </div>
+
+        <div class="row">
+
+            <div class="col-lg-12 col-xl-8 offset-xl-2">
+
+                <!-- Nuevo Cliente-->
+                <div class="card shadow mb-4">
+
+                    <div class="card-header py-3">
+                        <div class="row">
+                            <div class="col-12 pt-1">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    {{ cliente is empty ? 'Formulario Nuevo Cliente' : cliente.apellidos ~ ", " ~ cliente.nombre }}
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="clienteform" action="{{ cliente is empty ? '/client/new' : '/client/edit/'~cliente.pkey }}" class="will-validate show-invalid" method="POST" novalidate>
+                            <div class="table-responsive">
+                                <table class="table table-borderless clientes" cellspacing="0">
+                                    <tbody>
+                                    <tr>
+                                        <th>Nombre</th>
+                                        <td>
+
+                                            <input type="text" class="form-control" name="nombre"
+                                                   value="{{ cliente.nombre }}">
+                                            <div class="valid-message">
+                                            </div>
+                                            <div class="invalid-message">
+                                               Este campo no puede estar vacío.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Apellidos</th>
+                                        <td>
+                                            <input type="text" class="form-control" name="apellidos"
+                                                   value="{{ cliente.apellidos }}">
+                                            <div class="valid-message">
+                                            </div>
+                                            <div class="invalid-message">
+                                                Este campo no puede estar vacío.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Dirección</th>
+                                        <td>
+                                            <input type="text" class="form-control" name="direccion"
+                                                   value="{{ cliente.direccion }}">
+                                            <div class="invalid-message">
+                                                Este campo no puede estar vacío.
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <th>C.P / Población</th>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-6 border-right">
+                                                    <input type="text" class="form-control" name="cp"
+                                                           value="{{ cliente.cp }}">
+                                                    <div class="invalid-message">
+                                                        Introduce un C.P válido.
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <input type="text" class="form-control" name="poblacion"
+                                                           value="{{ cliente.poblacion }}">
+                                                    <div class="valid-message">
+                                                    </div>
+                                                    <div class="invalid-message">
+                                                        Este campo no puede estar vacío.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Provincia</th>
+                                        <td>
+                                            <input type="text" class="form-control" name="provincia"
+                                                   value="{{ cliente.provincia }}">
+                                            <div class="valid-message">
+                                            </div>
+                                            <div class="invalid-message">
+                                                Este campo no puede estar vacío.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>Tlf.</th>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-3">
+                                                    <select class="form-control" id="tlflist" name="tlflist[]" multiple required>
+                                                        {% for tel in cliente.tels %}
+                                                            <option>{{ tel }}</option>
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="col-3">
+                                                    <span class="btn btn-danger btn-icon-split btn-sm" onclick="rmTel()">
+                                                    <span class="icon text-white-50">
+                                                    <i class="fas fa-trash"></i>
+                                                    </span>
+                                                    <span class="text">Borrar tlf.</span>
+                                                    </span>
+                                                </div>
+
+                                                <div class="col-3">
+                                                    <input type="text" class="form-control" id="newtlf" value=""
+                                                           placeholder="...">
+                                                </div>
+                                                <div class="col-3">
+                                                    <span class="btn btn-success btn-icon-split btn-sm" onclick="addTel()">
+                                                    <span class="icon text-white-50">
+                                                    <i class="fas fa-plus"></i>
+                                                    </span>
+                                                    <span class="text">Añadir tlf.</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </td>
+
+                                    </tr>
+                                    <tr>
+                                        <th>Email</th>
+                                        <td>
+                                            <input type="text" class="form-control" name="email"
+                                                   value="{{ cliente.email }}">
+                                            <div class="valid-message">
+                                            </div>
+                                            <div class="invalid-message">
+                                              Introduce un email válido.
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <th>DNI</th>
+                                        <td>
+                                            <input type="text" class="form-control" name="dni"
+                                                   value="{{ cliente.dni }}">
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="col-12 text-center">
+                                <button type="button" class="btn btn-secondary btn-icon-split"
+                                        onClick="window.history.back();">
+                                        <span class="icon text-white-50">
+                                        <i class="fas fa-times"></i>
+                                        </span>
+                                    <span class="text">Cancelar</span>
+                                </button>
+                                {% if cliente is empty %}
+                                    <button type="button" name="entrega" class="btn btn-primary btn-icon-split"
+                                            data-backdrop="static" data-toggle="modal" data-target="#ModalCliente">
+                                        <span class="icon text-white-50">
+                                        <i class="fas fa-plus"></i>
+                                        </span>
+                                        <span class="text">Guardar Nuevo Registro</span>
+                                    </button>
+                                {% else %}
+                                    <button type="button" name="entrega" class="btn btn-primary btn-icon-split"
+                                        data-backdrop="static" data-toggle="modal" data-target="#ModalCliente">
+                                        <span class="icon text-white-50">
+                                        <i class="fas fa-sync"></i>
+                                        </span>
+                                        <span class="text">Guardar Cambios</span>
+                                    </button>
+                                {% endif %}
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+{% block modals %}
+    <!-- Modals -->
+    <div class="modal fade" id="ModalCliente" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">{{ cliente is empty ? 'Confirmación de Creación' : 'Confirmación cambios.' }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ cliente is empty ? '¿Añadir este cliente al registro?' : '¿Confirmar los cambios hechos al cliente?' }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary close-modal" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onClick="customSubmit()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modals -->
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        function rmTel() {
+            var x = document.getElementById("tlflist");
+            x.remove(x.selectedIndex);
+            return false;
+        }
+
+        function selectAllTels(){
+
+            //Recojo todos los telefonos del select
+            selectBox = document.getElementById("tlflist");
+
+            for (var i = 0; i < selectBox.options.length; i++)
+            {
+                selectBox.options[i].selected = true;
+            }
+        }
+
+        function addTel() {
+
+            if( $('#newtlf').val() !== "") {
+                $('#tlflist').append($('<option>', {
+                    text: $('#newtlf').val()
+                }));
+            }
+            $('#newtlf').val('');
+
+        }
+
+        function customSubmit()
+        {
+            const clienteform = $('#clienteform');
+            selectAllTels();
+            let res = validateClientForm(clienteform);
+            console.log(res);
+            $(clienteform).addClass('validated-form');
+            if(res){
+                $(clienteform).submit();
+            }
+            else{
+                $('#ModalCliente .close-modal').click();
+                return false;
+            }
+
+        }
+
+        function validateClientForm(form){
+
+            $(form).removeClass('validated-form');
+
+            let isValid = [];
+            $(form).find('input').toArray().forEach((input) => {
+                switch($(input).attr('name')){
+
+                    case('nombre'):
+                    case('apellidos'):
+                    case('direccion'):
+                    case('poblacion'):
+                    case('provincia'):
+                        $(input).one('keypress',()=>{
+                            //jquery one hace que se suscriba a un evento y se borre la suscripcion al ejecutarse una sola vez.
+                            $(input).removeClass('valid-input');
+                            $(input).removeClass('invalid-input');
+                        });
+
+                        if($(input).val()){
+                            $(input).addClass('valid-input');
+                            isValid.push(true);
+                        }
+                        else{
+
+                            $(input).addClass('invalid-input');
+                            isValid.push(true);
+                        }
+                        break;
+
+                    case('cp'):
+
+                        $(input).one('keypress',()=>{
+                            $(input).removeClass('valid-input');
+                            $(input).removeClass('invalid-input');
+
+                        });
+
+                        let cp = $(input).val();
+                        if(cp && +cp){
+                            $(input).addClass('valid-input');
+                            isValid.push(true);
+                        }
+                        else{
+                            $(input).addClass('invalid-input');
+                            isValid.push(false);
+                        }
+                        break;
+
+                    case('email'):
+
+                        $(input).one('keypress',()=>{
+                            $(input).removeClass('valid-input');
+                            $(input).removeClass('invalid-input');
+                        });
+
+                        let email = $(input).val();
+
+                        if(email){
+
+                            //solo validamos si hay valor, si no hay lo damos por válido también porque puede que no tenga email el cliente
+                            if(validateEmail(email)){
+                                $(input).addClass('valid-input');
+                                isValid.push(true);
+                            }
+                            else{
+                                $(input).addClass('invalid-input');
+                                isValid.push(false);
+                            }
+                        }
+                        break;
+                    default:
+                        break;
+
+                }
+
+            });
+            //devuelve un solo booleano, true si todos los elementos son true, false si alguno es false.
+            return ! (!!isValid.filter(elem => !elem).length);
+        }
+
+        function validateEmail(email) {
+            const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(String(email).toLowerCase());
+        }
+
+    </script>
+{% endblock %}

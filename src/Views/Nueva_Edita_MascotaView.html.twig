@@ -1,0 +1,257 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block head %}
+    <link href="{{ files_rootpath }}/css/core.css" rel="stylesheet" type="text/css" />
+    <link href="{{ files_rootpath }}/css/datepicker.css" rel="stylesheet" type="text/css" />
+{% endblock %}
+
+{% block content %}
+
+    <!-- Page Heading -->
+    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+        <h1 class="h3 mb-0 rojo-felican">{{ (mascota is empty) ? 'Nueva Mascota' : 'Editar Mascota' }}</h1>
+    </div>
+
+        <div class="row new-mascota-content">
+
+            <div class="col-l2 col-lg-10 col-xl-8 offset-lg-1 offset-xl-2">
+
+                <!-- Nuevo Cliente-->
+                <div class="card shadow mb-4">
+
+                    <div class="card-header d-flex align-items-center">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {{ (mascota is empty) ? 'Formulario de registro de mascotas' : 'Formulario de edición de mascotas' }}
+                        </h6>
+                        <div class="propietario-mascota"> <span class="bg-gradient-primary">  {{ (mascota is empty) ? nombrecliente : mascota.propietario[1] }}</span></div>
+                    </div>
+
+                    <div class="card-body">
+                        <form id="mascotaform" action="{{ (mascota is empty) ? '/pet/new/' ~ id_cliente  : '/pet/edit/' ~ mascota.pkey }}" method="POST" autocomplete="off">
+
+                            <div class="form-row mt-4">
+
+                                <div class="form-group col-12 col-md-12 col-lg-4 col-xl-6">
+                                    <label for="nombre_mascota">Nombre de Mascota</label>
+                                    <input type="text" class="form-control" name="nombremascota" id="nombre_mascota" value="{{ (mascota is empty) ? '' : mascota.nombre }}">
+                                </div>
+                                <div class="form-group col-6 col-lg-4 col-xl-3 text-center">
+                                    <label class="font-weight-bold" for="iguala-group">Iguala</label>
+                                    <div class="cust-checkbox justify-content-center">
+                                        <input class="checkbox-tools" type="radio" name="igualado" id="iguala_si" value="si" {{ (mascota is empty) ? '' : mascota.igualada == 'si' ? 'checked'}} >
+                                        <label class="for-checkbox-tools" for="iguala_si">
+                                            Sí
+                                        </label>
+
+                                        <input class="checkbox-tools" type="radio" name="igualado" id="iguala_no" value="no" {{ (mascota is empty) ? 'checked' : mascota.igualada == 'no' ? 'checked'}}>
+                                        <label class="for-checkbox-tools" for="iguala_no">
+                                            No
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-6 col-lg-4 col-xl-3 text-center">
+                                    <label class="font-weight-bold" for="sexo-group">Sexo</label>
+                                    <div class="cust-checkbox justify-content-center">
+                                        <input class="checkbox-tools" type="radio" name="sexomascota" id="sexo_macho" value="macho" {{ (mascota is empty) ? 'checked' : mascota.sexo|lower == 'macho' ? 'checked'}}>
+                                        <label class="for-checkbox-tools" for="sexo_macho">
+                                            Macho
+                                        </label>
+
+                                        <input class="checkbox-tools" type="radio" name="sexomascota" id="sexo_hembra" value="hembra" {{ (mascota is empty) ? '' : mascota.sexo|lower == 'hembra' ? 'checked'}}>
+                                        <label class="for-checkbox-tools" for="sexo_hembra">
+                                            Hembra
+                                        </label>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="form-row especie-raza">
+                                <div class="form-group col-md-4">
+                                    <label class="font-weight-bold" for="especie_selection">Especie</label>
+                                    <select class="form-control" id="especie_selection"
+                                            name="especieselection" required>
+                                        {% if mascota is empty %}
+                                            <option value="" selected disabled hidden>Selecciona...</option>
+                                        {% endif %}
+                                        <option {{ (not (mascota is empty)) ? (mascota.especie|lower == 'perro') ? 'selected'}}>perro</option>
+                                        <option {{ (not (mascota is empty)) ? (mascota.especie|lower == 'gato') ? 'selected'}}>gato</option>
+                                        <option {{ (not (mascota is empty)) ? (mascota.especie|lower == 'conejo') ? 'selected'}}>conejo</option>
+                                        <option {{ (not (mascota is empty)) ? (mascota.especie|lower == 'hurón') ? 'selected'}}>hurón</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-4 mestizo-raza text-center {{ (mascota is empty) ? 'd-none' :  not ( (mascota.especie|lower == 'perro') or (mascota.especie|lower == 'gato')) ? 'd-none'}}">
+                                    <label class="font-weight-bold" for="raza-group">¿Cruce o de Raza?</label>
+                                    <div class="cust-checkbox justify-content-center">
+                                        <input class="checkbox-tools" type="radio" name="ismestizo" id="mestizo" value="si" {{ not (mascota is empty) ? ('cruce' in (mascota.raza|lower)) ? 'checked'}}>
+                                        <label class="for-checkbox-tools" for="mestizo">
+                                            Mestizo
+                                        </label>
+
+                                        <input class="checkbox-tools" type="radio" name="ismestizo" id="raza" value="no" {{ (mascota is empty) ? 'checked' : not('cruce' in (mascota.raza|lower)) ? 'checked'}}>
+                                        <label class="for-checkbox-tools" for="raza">
+                                            Raza
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4 text-center">
+                                    <label for="gatos-or-perros-list" class="seleccion-raza">Selección Raza</label>
+                                    <div class="no-aplica text-center {{ not (mascota is empty) ?  ( (mascota.especie|lower == 'perro') or (mascota.especie|lower == 'gato')) ? 'd-none'}}">N/A</div>
+                                    <select id="razas_perros" name="razasperros" class="form-control {{ (mascota is empty) ? 'd-none' :  (mascota.especie|lower == 'perro') ? '' : 'd-none'}}" required>
+                                       {% for raza_perro in razas_perros %}
+                                           <option {{ raza_perro|lower in mascota.raza|lower  ? 'selected'}}>{{ raza_perro }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <select id="razas_gatos" name="razasgatos" class="form-control {{ (mascota is empty) ? 'd-none' :  (mascota.especie|lower == 'gato') ? '' : 'd-none'}}" required>
+                                        {% for raza_gato in razas_gatos %}
+                                            <option {{ raza_gato|lower in mascota.raza|lower ? 'selected'}}>{{ raza_gato }}</option>
+                                        {% endfor %}
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold" for="capa_mascota">Capa</label>
+                                    <input type="text" class="form-control" name="capamascota" id="capa_mascota" value="{{ (not mascota is empty) ? mascota.capa}}">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold" for="pelo_mascota">Pelo</label>
+                                    <input type="text" class="form-control" id="pelo_mascota" name="pelomascota" value="{{ (not mascota is empty) ? mascota.pelo}}">
+                                </div>
+                            </div>
+                            <div class="form-row">
+
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold" for="nacimientomascota">Fecha de Nacimiento de Mascota</label>
+                                    <input autocomplete="off" name="nacimientomascota" id="nacimiento" value="{{ not (mascota is empty) ? mascota.fechanacimiento}}">
+                                </div>
+
+                                <div class="form-group col-md-6">
+                                    <label class="font-weight-bold" for="chip_mascota">Nº CHIP</label>
+                                    <input type="text" class="form-control" name="chipmascota" id="chip_mascota" value="{{ (not mascota is empty) ? mascota.nchip}}">
+                                </div>
+                            </div>
+                            <div class="col-12 text-right">
+                                <button type="button" class="btn btn-secondary btn-icon-split"
+                                        onClick="window.history.back();">
+                                        <span class="icon text-white-50">
+                                        <i class="fas fa-times"></i>
+                                        </span>
+                                    <span class="text">Cancelar</span>
+                                </button>
+                                <button type="button" name="entrega" class="btn btn-primary btn-icon-split"
+                                        data-backdrop="static" data-toggle="modal" data-target="#ModalMascota">
+                                    <span class="icon text-white-50">
+                                    {% if mascota is empty %}
+                                        <i class="fas fa-plus"></i>
+                                        </span>
+                                        <span class="text">Registrar Mascota</span>
+                                    {% else %}
+                                        <i class="fas fa-check"></i>
+                                        </span>
+                                        <span class="text">Guardar Cambios</span>
+                                        {% endif %}
+
+                                </button>
+
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+{% endblock %}
+
+{% block modals %}
+
+    <!-- Modals -->
+    <div class="modal fade" id="ModalMascota" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">{{ (mascota is empty) ? 'Confirmación de Creación' : 'Confirmación de actualización'}}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    {{ (mascota is empty) ? '¿Desea añadir al registro a esta mascota?' : '¿Confirmar cambios realizados a la mascota?'}}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" name="submit" class="btn btn-primary" onClick="$('#mascotaform').submit()">Confirmar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- End of Modals -->
+{% endblock %}
+
+{% block scripts %}
+
+    <!-- script selección de razas -->
+    <script>
+        $(function(){
+            $('#especie_selection').change(function(){
+                var data= $(this).val();
+
+                $selectdogs =  $('select#razas_perros');
+                $selectcats =  $('select#razas_gatos');
+
+                $noaplica = $('.no-aplica');
+                $mestizo_raza = $('.especie-raza .mestizo-raza');
+
+
+
+                switch (data) {
+                    case 'perro':
+                        console.log("perro selected");
+                        $noaplica.addClass('d-none');
+                        $selectcats.addClass('d-none');
+                        $selectdogs.removeClass('d-none');
+                        $mestizo_raza.removeClass('d-none');
+                        break;
+
+                    case 'gato':
+                        console.log("gato selected");
+                        $noaplica.addClass('d-none');
+                        $selectcats.removeClass('d-none');
+                        $selectdogs.addClass('d-none');
+                        $mestizo_raza.removeClass('d-none');
+                        break;
+                    case 'hurón':
+                        console.log("huron selected");
+                        $noaplica.removeClass('d-none');
+                        $selectcats.addClass('d-none');
+                        $selectdogs.addClass('d-none');
+                        $mestizo_raza.addClass('d-none');
+                        break;
+                    case 'conejo':
+                        console.log("conejo selected");
+                        $noaplica.removeClass('d-none');
+                        $selectcats.addClass('d-none');
+                        $selectdogs.addClass('d-none');
+                        $mestizo_raza.addClass('d-none');
+                        break;
+                    default:
+                        break;
+                }
+
+            });
+
+
+        });
+    </script>
+
+    <script src="{{ files_rootpath }}/js/core.js"></script>
+    <script src="{{ files_rootpath }}/js/datepicker.js"></script>
+    <script>
+        new GijgoDatePicker(document.getElementById('nacimiento'), {
+            uiLibrary: 'bootstrap4',
+            locale: 'es-es',
+            format: 'dd/mm/yyyy'
+        });
+    </script>
+
+{% endblock %}

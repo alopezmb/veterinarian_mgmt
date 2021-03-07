@@ -1,0 +1,714 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block content %}
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-2 mr-1">
+
+        <h1 class="h3 mb-0 rojo-felican">Ficha de Mascota</h1>
+
+        <div class="prevnext">
+            <a href="/client/{{ mascota.propietario[0] }}">
+                <i class="fas fa-arrow-circle-left "></i>
+                <span>Atrás</span>
+            </a>
+        </div>
+
+        <a href="#" class="btn btn-secondary btn-icon-split" data-backdrop="static" data-toggle="modal"
+           data-target="#ModalBajaMascota">
+            <span class="icon text-white-50"><i class="fas fa-trash"></i></span>
+            <span class="text">Baja Mascota</span>
+        </a>
+
+    </div>
+
+    <div class="d-flex align-items-center justify-content-center mb-2">
+        {% if flash.check_type == 'check_ok' %}
+            <div id="flash_success" class="alert alert-success text-center">
+                {%  for message in flash.message %}
+                <strong>{{ message }}</strong>
+                {% endfor %}
+            </div>
+        {% elseif flash.check_type == 'check_error' %}
+            <div id="flash_error" class="alert alert-danger text-center">
+                {%  for message in flash.message %}
+                    <strong>{{ message }}</strong>
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="row">
+
+        <div class="col-lg-12 col-xl-8 offset-xl-2">
+
+            <!-- Descripción Cliente -->
+            <div class="card shadow mb-4">
+
+                <div class="card-header py-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="m-0 font-weight-bold text-primary">
+                            {{ mascota.nombre }}
+                        </h6>
+                        <h6 class="m-0 font-weight-bold text-danger blink_me {{ mascota.observaciones is empty ? 'd-none'}}">ATENCIÓN A OBSERVACIONES</h6>
+
+                        <a class="hvr-grow" href="/pet/edit/{{ mascota.pkey }}">
+                            <i class="fas fa-edit fa-2x text-primary"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="card-body mt-0 pt-0 pb-0">
+
+                    <div class="row mt-3 mb-3">
+                        <div class="col-12 text-center">
+                            <a href="#" class="btn btn-danger btn-icon-split" data-backdrop="static" data-toggle="modal"
+                               data-target="#ModalObservaciones">
+                                <span class="icon text-white-50"><i class="fas fa-exclamation-triangle"></i></span>
+                                <span class="text">Observaciones</span>
+                            </a>
+                            <a href="#" class="btn btn-info btn-icon-split" data-backdrop="static" data-toggle="modal" data-target="#ModalHistorial">
+                                            <span class="icon text-white-50">
+                                                <i class="fas fa-info-circle"></i>
+                                            </span>
+                                <span class="text">Historial</span>
+                            </a>
+
+                            <a href="#" class="btn btn-warning btn-icon-split" data-backdrop="static" data-toggle="modal" data-target="#ModalRecordatorio">
+                                        <span class="icon text-white-50">
+                                            <i class="fas fa-syringe"></i>
+                                        </span>
+                                <span class="text">Recordatorios</span>
+                            </a>
+
+                        </div>
+                    </div>
+                    <table class="table table-striped">
+                        <tbody>
+                        <tr>
+                            <th scope="row">Nombre Mascota </th>
+                            <td>
+                                <div class="row">
+                                    <div class="col-8">
+                                        {{ mascota.nombre }}
+                                    </div>
+                                    <div class="col-4 text-left">
+                                        <h6 class="m-0 font-weight-bold text-danger iguala {{ (mascota.igualada|trim) == 'no' ? 'd-none'}}">IGUALADA</h6>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Iguala</th>
+                            <td>
+                                <div id="igualarow" class="row">
+                                    <div class="col-4 border-right pt-2">
+                                        {{ mascota.igualada == 'si' ? 'SÍ': 'NO' }}
+                                    </div>
+                                    <div class="col-8 text-center">
+                                        <button id ="submit_igualada" class="btn btn-danger btn-icon-split {{ (mascota.igualada|trim) == 'no' ? 'd-none'}}"
+                                                data-backdrop="static" data-toggle="modal" data-target="#ModalIgualaMascota">
+                                                        <span class="icon text-white-50">
+                                                            <i class="fas fa-arrow-down"></i>
+                                                        </span>
+                                            <span class="text">Baja de Iguala</span>
+                                        </button>
+                                        <button id="submit_noigualada" class="btn btn-success btn-icon-split {{ (mascota.igualada|trim) == 'si' ? 'd-none'}}"
+                                                data-backdrop="static" data-toggle="modal" data-target="#ModalIgualaMascota">
+                                                        <span class="icon text-white-50">
+                                                            <i class="fas fa-arrow-up"></i>
+                                                        </span>
+                                            <span class="text">Alta de Iguala</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Propietario</th>
+                            <td>  {{ mascota.propietario[1] }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Fecha Nacimiento Mascota</th>
+                            <td>
+                                <input id="mascotadate" type="text"
+                                       class="form-control"
+                                       value="{{ mascota.fechanacimiento }}" disabled>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Especie</th>
+                            <td>{{ mascota.especie|capitalize }}</td>
+                        <tr>
+                            <th scope="row">Raza</th>
+                            <td>{{ mascota.raza|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Capa</th>
+                            <td>{{ mascota.capa|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Pelo</th>
+                            <td>{{ mascota.pelo|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Sexo</th>
+                            <td>{{ mascota.sexo|capitalize }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Nº Chip</th>
+                            <td><span id="nchipmascota">{{ mascota.nchip }}</span></td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+
+{% endblock %}
+
+
+{% block modals %}
+    <!-- Modals -->
+
+
+    <!-- Modal Observaciones-->
+    <div class="modal fade" id="ModalObservaciones" tabindex="-1" role="dialog" aria-labelledby="ModalObservacionesMascotas"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary">Observaciones de {{ mascota.nombre }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <textarea name="observaciones" id="observaciones_editor"></textarea>
+                </div>
+                <div class="bg-white">
+                    <div id="success_observaciones" class="alert alert-success text-center">
+                        <strong>Cambios guardados correctamente.</strong>
+                    </div>
+                    <div id="error_observaciones" class="alert alert-danger text-center">
+                        <strong>Ha habido un error al guardar los cambios.</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id ="submit_observaciones" name ="submit_observaciones"  class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Historial-->
+    <div class="modal fade" id="ModalHistorial" tabindex="-1" role="dialog" aria-labelledby="ModalHistorialMascotas"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" id="ModalHistorialMascotas">Historial de {{ mascota.nombre }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body bg-light">
+                    <div class="text-center mb-4">
+                                <span class="btn btn-info btn-icon-split" onClick="addCurrentDate()">
+                                    <span class="icon text-white-50">
+                                        <i class="fas fa-calendar"></i>
+                                    </span>
+                                    <span class="text">Nueva Entrada</span>
+                                </span>
+                    </div>
+                    <textarea name="historial" id="historial_editor"></textarea>
+                </div>
+                <div class="bg-white">
+                    <div id="success_historial" class="alert alert-success text-center">
+                        <strong>Cambios guardados correctamente.</strong>
+                    </div>
+                    <div id="error_historial" class="alert alert-danger text-center">
+                        <strong>Ha habido un error al guardar los cambios.</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <span id="scrollanchor"></span>
+                    <button id ="submit_historial" name ="submit_historial"  class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal recordatorios -->
+    <div class="modal fade" id="ModalRecordatorio" tabindex="-1" role="dialog"
+         aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title text-primary" id="">Recordatorios de vacunas</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-4 text-dark">
+                            CONCEPTO
+                        </div>
+                        <div class="col-8 text-dark">
+                            FECHA RECORDATORIO
+                        </div>
+                    </div>
+                    {% for rem in mascota.recordatorios %}
+                        {% set concepto, especie, cadencia = rem.concepto|capitalize, mascota.especie, rem.cadencia %}
+                        {% set fecha_rec =  rem.fecharecordatorio|split('-')|reverse|join('/') %}
+                        <div class="row mb-4">
+                            <div class="col-4">
+                                {{ concepto }}
+                            </div>
+                            <div class="col-5">
+                                <input type="text"
+                                       value="{{ fecha_rec|default('') }}"
+                                       id="{{ concepto ~ especie }}"
+                                       placeholder="dd/mm/aaaa"
+                                       class="form-control">
+                            </div>
+                            <div class="col-1">
+                                    <span class="btn btn-info btn-sm" onClick="setReminderDate('{{ concepto ~ especie }}',{{ cadencia }})">
+                                        <i class="fas fa-clock"></i>
+                                    </span>
+                            </div>
+                            <div class="col-1">
+                                    <span class="btn btn-danger btn-sm" onClick="resetDate('{{ concepto ~ especie }}')">
+                                        <i class="fas fa-times"></i>
+                                    </span>
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                    <div id="success_recordatorio" class="alert alert-success text-center">
+                        <strong>Cambios guardados correctamente.</strong>
+                    </div>
+                    <div id="error_recordatorio" class="alert alert-danger text-center">
+                        <strong>Ha habido un error al guardar los cambios.</strong>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button id ="submit_recordatorios" name ="submit_recordatorios"  class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Borrar Mascota -->
+    <div class="modal fade" id="ModalBajaMascota" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="">CONFIRMAR BAJA MASCOTA</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    ¿Estás seguro que quieres dar de baja a esta mascota?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <form action="/pet/delete/{{ mascota.pkey }}" method="POST">
+                        <input type="hidden" name="id_cliente" value="{{ mascota.propietario[0] }}"/>
+                        <button name="bajamascota" type="submit" class="btn btn-danger">Dar de baja</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Modal Confirmacion Iguala Mascota -->
+    <div class="modal fade" id="ModalIgualaMascota" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">TÍTULO DEL MODAL</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            Mensaje de confirmación
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                            <button class="btn btn-primary" onClick="">Confirmar</button>
+                        </div>
+                </div>
+            </div>
+    </div>
+    <!-- End of Modals -->
+{% endblock %}
+
+{% block scripts %}
+
+    <script src="{{ files_rootpath }}/vendor/tinymce/js/tinymce/tinymce.min.js"></script>
+
+    <script>
+
+        let adaptedModalHeight  = 0;
+        if(window.innerHeight < 500){
+            adaptedModalHeight = window.innerHeight*0.60;
+        }
+        else if(window.innerHeight >= 500 && window.innerHeight < 700){
+            adaptedModalHeight = window.innerHeight*0.70;
+        }
+        else if(window.innerHeight >=700 && window.innerHeight < 900){
+            adaptedModalHeight = window.innerHeight*0.75;
+        }
+        else{
+            adaptedModalHeight = window.innerHeight*0.85;
+        }
+
+        tinymce.init({
+            selector: 'textarea#historial_editor',
+            height: adaptedModalHeight*0.80,
+            language: 'es',
+            resize:false,
+            menubar: false,
+            toolbar: ['bold italic underline | forecolor | fontsizeselect | alignleft aligncenter alignright'],
+            content_style: 'span.fecha { color: red; font-weight:bold; font-size:15pt; text-decoration:underline; }',
+            init_instance_callback : function (editor){
+                editor.setContent('{{ mascota.historial|raw }}',{format: 'raw'});
+            }
+        });
+
+        tinymce.init({
+            selector: 'textarea#observaciones_editor',
+            height: adaptedModalHeight*0.80,
+            language: 'es',
+            resize:false,
+            menubar: false,
+            toolbar: ['bold italic underline | forecolor | fontsizeselect | alignleft aligncenter alignright'],
+            content_style: 'span.fecha { color: red; font-weight:bold; font-size:15pt; text-decoration:underline; }',
+            init_instance_callback : function (editor){
+                editor.setContent('{{ mascota.observaciones|raw }}',{format: 'raw'});
+            }
+        });
+
+        $( document ).ready(function() {
+            //Mensajes Flash historial y recordatorio (aparecen dentro de modals)
+            $('#success_historial').hide();
+            $('#error_historial').hide();
+            $('#success_recordatorio').hide();
+            $('#error_recordatorio').hide();
+            $('#success_observaciones').hide();
+            $('#error_observaciones').hide();
+
+            //Mensajes flash de error o exito de editar mascota
+            $('#flash_success').show().delay(2000).fadeOut(1000);
+            $('#flash_error').show().delay(2000).fadeOut(1000);
+
+            let visibleHeight = window.innerHeight;
+            $('#ModalHistorial .modal-body').css('height',modalHeight);
+
+        });
+
+    </script>
+
+    <!--funciones para el historial de la mascota-->
+    <script type="text/javascript">
+
+        $('#ModalHistorial').on('shown.bs.modal', function (e) {
+            //scroll al final cada vez que abro el modal.
+            tinymce.get('historial_editor').getWin().scrollTo(0, tinymce.get('historial_editor').getBody().scrollHeight);
+        });
+
+
+        function today(){
+            var today = new Date();
+            var dd = today.getDate();
+            var mm = today.getMonth()+1; //January is 0!
+            var yyyy = today.getFullYear();
+
+            if(dd<10) {
+                dd = '0'+dd
+            }
+
+            if(mm<10) {
+                mm = '0'+mm
+            }
+
+            today = dd + '/' + mm + '/' + yyyy;
+            return today;
+
+        }
+
+        function addCurrentDate() {
+
+            let ed = tinymce.get('historial_editor');
+            ed.dom.add(ed.getBody(), 'span', {class: 'fecha'}, this.today());
+            ed.getWin().scrollTo(0, ed.getBody().scrollHeight);
+            ed.selection.select(ed.getBody().lastChild);
+            ed.selection.getRng(1).collapse(0);
+            ed.dom.add(ed.getBody(), 'span', {}, '&nbsp &nbsp &nbsp &nbsp &nbsp');
+            ed.getWin().scrollTo(0, ed.getBody().scrollHeight);
+            ed.selection.select(ed.getBody().lastChild);
+            ed.selection.getRng(1).collapse(0);
+            ed.getBody().focus();
+
+        }
+
+
+        function getRecordatorioDates() {
+            let recordatorios = [];
+            {% for rem in mascota.recordatorios %}
+                {% set concepto, especie, cadencia, pkey = rem.concepto|capitalize, mascota.especie, rem.cadencia, rem.pkey %}
+                var daterec = $('#{{ concepto ~ especie }}').val();
+                recordatorios.push(['{{ concepto }}',daterec, '{{ cadencia }}','{{ pkey }}']);
+            {% endfor %}
+
+            return recordatorios;
+
+        }
+
+        $('#submit_observaciones').click(function() {
+
+            var params = {
+                "observacionesmascota" : tinymce.get('observaciones_editor').dom.getRoot().innerHTML
+            };
+
+            $.ajax({
+                data:  params, //datos que se envian a traves de ajax
+                url:   '/pet/{{ mascota.pkey }}/observations', //archivo que recibe la peticion
+                type:  'POST', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success:  function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+                    //error
+                    if( parseInt(response) === 1) {
+                        $('#error_observaciones').show().delay(2000).fadeOut(1000);
+
+                    }
+                    //success
+                    else if(parseInt(response) === 0){
+                        $('#success_observaciones').show().delay(2000).fadeOut(1000);
+
+                    }
+                }
+            });
+        });
+
+        $('#submit_historial').click(function() {
+
+            var params = {
+                "historialmascota" : tinymce.get('historial_editor').dom.getRoot().innerHTML
+        };
+
+            $.ajax({
+                data:  params, //datos que se envian a traves de ajax
+                url:   '/pet/{{ mascota.pkey }}/history', //archivo que recibe la peticion
+                type:  'POST', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success:  function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+                    //error
+                    if( parseInt(response) === 1) {
+                        $('#error_historial').show().delay(2000).fadeOut(1000);
+
+                    }
+                    //success
+                    else if(parseInt(response) === 0){
+                        $('#success_historial').show().delay(2000).fadeOut(1000);
+
+                    }
+                }
+            });
+        });
+
+        $('#submit_recordatorios').click(function() {
+            var params = {
+                "recordatorios" : getRecordatorioDates()
+            };
+
+            $.ajax({
+                data:  params, //datos que se envian a traves de ajax
+                url:   '/pet/reminder', // ruta para procesar peticion
+                type:  'POST', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success:  function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+                    console.log(response);
+                    //error
+                    if( parseInt(response) === 1) {
+                        $('#error_recordatorio').show().delay(2000).fadeOut(1000);
+
+                    }
+                    //success
+                    else if(parseInt(response) === 0){
+                        $('#success_recordatorio').show().delay(2000).fadeOut(1000);
+
+                    }
+                }
+            });
+
+        });
+
+
+    </script>
+
+    <!--funciones para editar igualas mascota-->
+    <script type="text/javascript">
+
+        $('#submit_noigualada').click(function (){
+
+            $('#ModalIgualaMascota h5').text("CONFIRMAR ALTA DE IGUALA");
+            $('#ModalIgualaMascota div.modal-body').text("¿Estás seguro que quieres dar de alta la iguala de esta mascota?");
+            $('#ModalIgualaMascota button.btn-primary').attr('onclick','altaIguala()');
+        });
+
+        $('#submit_igualada').click(function (){
+
+            $('#ModalIgualaMascota h5').text("CONFIRMAR BAJA DE IGUALA");
+            $('#ModalIgualaMascota div.modal-body').text("¿Estás seguro que quieres dar de baja la iguala de esta mascota?");
+            $('#ModalIgualaMascota button.btn-primary').attr('onclick','bajaIguala()');
+        });
+
+
+        function altaIguala(){
+            var params = {
+                "igualada": 'si'
+            };
+
+            $.ajax({
+                data:  params, //datos que se envian a traves de ajax
+                url:   '/pet/{{ mascota.pkey }}/iguala', //archivo que recibe la peticion
+                type:  'POST', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success:  function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+                    //error
+                    if( parseInt(response) === 1) {
+                        console.log('error actualizando estado de la iguala.')
+                    }
+                    //success
+                    else if(parseInt(response) === 0){
+                        $('#igualarow div.col-4').text('SÍ');
+                        $('#submit_noigualada').addClass('d-none');
+                        $('#submit_igualada').removeClass('d-none');
+                        $('h6.iguala').removeClass('d-none'); //$('#success_deuda').show().delay(2000).fadeOut(1000);
+                    }
+                }
+            });
+
+            $("#ModalIgualaMascota").modal('hide');
+        }
+
+        function bajaIguala(){
+            var params = {
+                "igualada": 'no'
+            };
+
+            $.ajax({
+                data:  params, //datos que se envian a traves de ajax
+                url:   '/pet/{{ mascota.pkey }}/iguala', //archivo que recibe la peticion
+                type:  'POST', //método de envio
+                beforeSend: function () {
+                    console.log("procesando");
+                },
+                success:  function (response) { //una vez que el archivo recibe el request lo procesa y lo devuelve
+
+                    if( parseInt(response) === 1) {
+                        console.log('error actualizando estado de la iguala.')
+                    }
+                    //success
+                    else if(parseInt(response) === 0){
+                        $('#igualarow div.col-4').text('NO');
+                        $('#submit_igualada').addClass('d-none');
+                        $('#submit_noigualada').removeClass('d-none');
+                        $('h6.iguala').addClass('d-none');
+                    }
+                }
+            });
+
+            $("#ModalIgualaMascota").modal('hide');
+        }
+    </script>
+
+    <!--funciones para recordatorios mascota-->
+    <script type="text/javascript">
+
+        function addDays(date, days) {
+            const next = new Date(Number(date));
+            next.setDate(date.getDate() + days);
+            const day = ("0" +next.getDate()).slice(-2);
+            const month = ("0" + (next.getMonth() + 1)).slice(-2);
+            const year = next.getFullYear();
+            return([day,month,year].join('/'));
+        }
+
+        function getFutureDate(cadence){
+            var cadencia = parseInt(cadence);
+            var date = new Date();
+            var day = ("0" +date.getDate()).slice(-2);
+            var month = ("0" + (date.getMonth() + 1)).slice(-2);
+            var year = date.getFullYear();
+            if(cadencia < 365){
+                if((cadencia/30 + (date.getMonth() + 1))%12 === 0 ){
+                    month = ("0" + (date.getMonth() + 1 + (cadencia/30))).slice(-2);
+                }
+                else{
+                    month = ("0" + (cadencia/30 + (date.getMonth() + 1))%12).slice(-2);
+                    year = date.getFullYear() + 1;
+                }
+            }
+            else{
+                year += parseInt(cadencia/365);
+            }
+
+            if((month === "02") && (parseInt(day) >= 27)) {
+                day= "01";
+                month= "03";
+            }
+
+            if((parseInt(day) >= 30) && cadencia !== 365){
+                if(month === "02"){
+                    day="01";
+                    month="03";
+                }
+                else{
+                    day = '30';
+                }
+
+            }
+
+            return([day, month,year].join('/'));
+        }
+
+        function setReminderDate(concept,cadence) {
+            $selector = $('#'+concept);
+            if ($selector.val()){
+                let mdy = $selector.val().split('/');
+                let lastdate = new Date([mdy[2],mdy[1],mdy[0]].join('/'));
+                let result = addDays(lastdate,cadence);
+                result === 'aN/aN/NaN' ? $selector.val('error') : $selector.val(result);
+            }
+            else{
+                $selector.val("error");
+            }
+        }
+
+        function resetDate(concept){
+            $('#'+concept).val('');
+
+        }
+
+    </script>
+
+{% endblock %}

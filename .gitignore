@@ -1,0 +1,8 @@
+.idea
+.htaccess
+storage/
+backups/
+vendor/
+.env
+composer.lock
+src/Models/Mailing/firma_email.php

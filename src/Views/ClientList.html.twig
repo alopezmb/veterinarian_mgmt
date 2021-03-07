@@ -1,0 +1,115 @@
+{% extends 'templates/Layout.html.twig' %}
+
+{% block head %}
+    <link href="{{files_rootpath}}/vendor/datatables/dataTables.bootstrap4.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+
+    <div class="d-sm-flex align-items-center justify-content-between mb-1">
+        <h1 class="h3 mb-0 rojo-felican">Lista de Clientes</h1>
+    </div>
+
+        <div class="row">
+            <div class="col-lg-12">
+
+                <p class="mb-4">Listado de clientes. Selecciona una entrada y se verá información detallada del cliente y sus mascotas. (Cada columna se puede organizar para mostrar los resultados alfabéticamente).</p>
+                <!-- Nuevo Cliente-->
+                <div class="card shadow mb-4">
+
+                    <div class="card-header py-3">
+                        <div class="row">
+                            <div class="col-12 pt-1">
+                                <h6 class="m-0 font-weight-bold text-primary">
+                                    Registro de Clientes
+                                </h6>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                <thead>
+                                <tr>
+                                    <th>Apellidos</th>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Población</th>
+                                </tr>
+                                </thead>
+                                <tfoot>
+                                <tr>
+                                    <th>Apellidos</th>
+                                    <th>Nombre</th>
+                                    <th>Dirección</th>
+                                    <th>Población</th>
+                                </tr>
+                                </tfoot>
+                                <tbody>
+                                {% for cliente in listado_clientes %}
+                                    <tr>
+                                        <td><a href="client/{{ cliente.pkey }}">{{ cliente.apellidos }}</a>
+                                        </td>
+                                        <td>{{ cliente.nombre }}</td>
+                                        <td> {{ cliente.direccion }}</td>
+                                        <td> {{ cliente.poblacion }}</td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+
+
+{% block scripts %}
+
+    <!-- Page level plugins -->
+    <script src="{{files_rootpath}}/vendor/datatables/jquery.dataTables.min.js"></script>
+    <script src="{{files_rootpath}}/vendor/datatables/dataTables.bootstrap4.min.js"></script>
+    <script src="{{files_rootpath}}/vendor/datatables/accent-neutralise.js"></script>
+
+    <!-- Page level custom scripts -->
+    <script>
+
+        $(document).ready(function() {
+            var table = $('#dataTable').DataTable({
+                "language": {
+                    "zeroRecords": "No se encontraron resultados.",
+                    "info": "Mostrando _START_ al _END_ de _TOTAL_ entradas.",
+                    "infoEmpty": "No se mostraron registros",
+                    "infoFiltered": " (filtrados de un total de  _MAX_ registros)",
+                    "lengthMenu":" Mostrar _MENU_ registros.",
+                    "search": "Buscar",
+                    "paginate": {
+                        "previous": "Anterior",
+                        "next": "Siguiente"
+                    }
+                },
+                "columns": [
+                   null,
+                    { "searchable": false },
+                    { "searchable": false },
+                    { "searchable": false }
+                ]
+            });
+
+            $('#dataTable_filter input').on('keyup', () =>{
+                table.columns(0).search('^'+ $('#dataTable_filter input').val(),true,false);
+            });
+
+
+
+        });
+
+
+
+
+    </script>
+{% endblock %}
